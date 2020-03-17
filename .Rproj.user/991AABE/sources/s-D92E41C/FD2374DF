@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1584464582261.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "FD2374DF",
+    "lastKnownWriteTime" : 1584465277,
+    "last_content_update" : 1584465277672,
+    "path" : "~/GitHub/richness-synchrony/empirical/analyses_by_site/MCR_coral_algae_backreef_format_spatial_analysis.R",
+    "project_path" : "empirical/analyses_by_site/MCR_coral_algae_backreef_format_spatial_analysis.R",
+    "properties" : {
+        "cursorPosition" : "252,41",
+        "scrollLine" : "239"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
