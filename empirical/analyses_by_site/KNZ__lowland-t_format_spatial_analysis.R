@@ -270,5 +270,5 @@ knz_t_lowland_results <- CommSpatSynch(inarray = data_array, do.Modularity=F, do
 #results$n.habitats <- length(unique(dat_habitats))
 knz_t_lowland_results$n.spp <- dim(data_array)[1]
 
-write_rds(knz_t_lowland_results, file = here("empirical/analyses_by_site/output",paste(dat.name, "_results.rds", sep ="")))
+saveRDS(knz_t_lowland_results, file = here("empirical/analyses_by_site/output",paste(dat.name, "_results.rds", sep ="")))
 

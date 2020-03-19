@@ -270,5 +270,5 @@ jrn_summ_results <- CommSpatSynch(inarray = data_array, do.Modularity=F, do.Mant
 #jrn_summ_results$n.habitats<-NA#<- length(unique(dat_habitats))
 jrn_summ_results$n.spp <- dim(data_array)[1]
 
-write_rds(jrn_summ_results, file = here("empirical/analyses_by_site/output",paste(dat.name, "_results.rds", sep ="")))
+saveRDS(jrn_summ_results, file = here("empirical/analyses_by_site/output",paste(dat.name, "_results.rds", sep ="")))
 

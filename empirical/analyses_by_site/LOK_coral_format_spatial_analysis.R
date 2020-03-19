@@ -271,6 +271,6 @@ lok_coral_results <- CommSpatSynch(inarray = data_array, do.Modularity = F, do.M
 
 lok_coral_results$n.spp <- dim(data_array)[1]
 
-write_rds(lok_coral_results, file = here("empirical/analyses_by_site/output",paste(dat.name, "_results.rds", sep ="")))
+saveRDS(lok_coral_results, file = here("empirical/analyses_by_site/output",paste(dat.name, "_results.rds", sep ="")))
 
 

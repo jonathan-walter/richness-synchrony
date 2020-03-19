@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1584637525222.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "3EC68D90",
+    "lastKnownWriteTime" : 1584638977,
+    "last_content_update" : 1584638977644,
+    "path" : "~/GitHub/richness-synchrony/empirical/site_summary_table/makeSiteTable.R",
+    "project_path" : "empirical/site_summary_table/makeSiteTable.R",
+    "properties" : {
+        "cursorPosition" : "27,0",
+        "scrollLine" : "15"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

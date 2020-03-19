@@ -265,5 +265,5 @@ jrg_results<-CommSpatSynch(inarray=data_array, do.Modularity=FALSE, do.Mantel=FA
 jrg_results$n.spp <- dim(data_array)[1]
 
 #write to output folder
-write_rds(jrg_results, file=here("empirica/analyses_by_site/output/jrg_results.rds"))
+saveRDS(jrg_results, file=here("empirical/analyses_by_site/output/jrg_results.rds"))
 

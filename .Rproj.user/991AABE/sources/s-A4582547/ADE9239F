@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1584639165873.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3909777825",
+    "id" : "ADE9239F",
+    "lastKnownWriteTime" : 1584641383,
+    "last_content_update" : 1584641383362,
+    "path" : "~/GitHub/richness-synchrony/mansuscriptFigures.R",
+    "project_path" : "mansuscriptFigures.R",
+    "properties" : {
+        "cursorPosition" : "188,0",
+        "scrollLine" : "152"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

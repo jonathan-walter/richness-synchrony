@@ -5,29 +5,60 @@
 # Revised by Max Castorani, University of Virginia, castorani@virginia.edu
 # Revised on 2018-05-09
 # ---------------------------------------------------------------------------------------------
-rm(list = ls())
+rm(list=ls())
 # ---------------------------------------------------------------------------------------------
-## Data manipulation packages
+# Source combined data from EDI
 # ---------------------------------------------------------------------------------------------
-# Load or install necessary libraries
-for (package in c('tidyverse', 'dplyr', 'ggplot2', 'ecodist', 'abind', 'geosphere', 'rgdal',
-                  'maps', 'reshape2', 'codyn', 'igraph', 'vegan', 'devtools')) {
-  if (!require(package, character.only=T, quietly=T)) {
-    install.packages(package)
-    library(package, character.only=T)
-  }
-}
+# Package ID: edi.437.1 Cataloging System:https://pasta.edirepository.org.
+# Data set title: Benthic algae and sessile invertebrate survey data from LTER and other reef ecosystems.
+# Data set creator:  Lauren Hallett - University of Oregon
+# Data set creator:  Max Castorani - University of Virginia
+# Data set creator:  Nina Lany - US Forest Service
+# Data set creator:  Daniel Reed - SBC LTER 
+# Data set creator:  Peter Edmunds - USVI, MCR LTER 
+# Data set creator:  Robert Carpenter - MCR LTER 
+# Contact:  Nina Lany - US Forest Service - Nina.Lany@usda.gov
+# Stylesheet v2.7 for metadata conversion into program: John H. Porter, Univ. Virginia, jporter@virginia.edu 
 
-# Source local version of CommSpatSynch that removed NMDS analysis
-source("GeogSynch/Scripts/CommSpatSynch_v3.R")
+inUrl2  <- "https://pasta-s.lternet.edu/package/data/eml/edi/437/1/d9c5d73d11fc6a16ec41139b63b27751" 
+infile2 <- tempfile()
+download.file(inUrl2,infile2,method="curl")
 
 
+marine <-read.csv(infile2,header=F 
+                  ,skip=1
+                  ,sep=","  
+                  ,quot='"' 
+                  , col.names=c(
+                    "year",     
+                    "site",     
+                    "habitat",     
+                    "plot",     
+                    "subplot",     
+                    "uniqueID",     
+                    "guild",     
+                    "species",     
+                    "abundance",     
+                    "unitAbund",     
+                    "scaleAbund"    ), check.names=TRUE, stringsAsFactors=FALSE)
+
+rm(infile2,inUrl2)
+
+# Source analysis routine script
+source(here("CommSpatSynch_v3.R"))
 
 # ---------------------------------------------------------------------------------------------
-# Load datasets
+# select data
 # ---------------------------------------------------------------------------------------------
 # Source preliminarily-formatted data
-source("Data_cleaning/mcr_cleaning.R")
+dat<-marine[marine$site=="mcr",]
+dat<-dat[dat$habitat=="Outer 10",]
+
+min.yr=2006
+max.yr=2015
+dat <- dat %>%
+  dplyr::filter(year >= min.yr & year <= max.yr) %>%
+  droplevels(.)
 
 # ---------------------------------------------------------------------------------------------
 # Clone specific data sets with a generic name
@@ -35,39 +66,6 @@ dat.site <- 'mcr'
 dat.name <- 'mcr_coral_algae_outer10'
 dat.habitat <- 'Outer 10'
 dat.domain <- 'marine'
-
-dat <- mcr; rm(mcr)
-
-coords <- mcr_coordinates; rm(mcr_coordinates)
-
-# ---------------------------------------------------------------------------------------------
-# Subset data based on habitat or project
-
-# First, find the years for which we have all data projects
-# min.yr.algae <- min(dat[dat$project == "algae",]$year)
-# min.yr.coral <- min(dat[dat$project == "coral",]$year)
-# max.yr.algae <- max(dat[dat$project == "algae",]$year)
-# max.yr.coral <- max(dat[dat$project == "coral",]$year)
-# min.yr <- max(c(min.yr.algae, min.yr.coral))
-# max.yr <- min(c(max.yr.algae, max.yr.coral))
-# 
-min.yr=2006
-max.yr=2015
-dat <- dat %>%
-  dplyr::filter(year >= min.yr & year <= max.yr) %>%
-  droplevels(.)
-# 
-# rm(min.yr.algae, min.yr.coral, max.yr.algae, max.yr.coral, min.yr, max.yr)
-
-# Second, subset by habitat type
-dat <- dat %>%
-  dplyr::filter(habitat == dat.habitat) %>%
-  droplevels(.)
-
-coords <- coords %>%
-  dplyr::filter(habitat == dat.habitat) %>%
-  droplevels(.)
-
 
 # ---------------------------------------------------------------------------------------------
 # Compute frequencies of occurrence and exclude very rare species
@@ -92,32 +90,23 @@ dat <- dat[dat$species %in% sppset, ]
 
 
 # ---------------------------------------------------------------------------------------------
-# For later reumanplatz package, create a data array based on taxon abundance at each space-time sampling point
+# create a data array based on taxon abundance at each space-time sampling point
 # ---------------------------------------------------------------------------------------------
 
-# First spread the abundance of each taxon over years
-dat.spread <- dat %>%
-  group_by(species) %>%
-  spread(key = year, value = abundance, fill = 0) %>%
-  dplyr::select(site, habitat, plot, subplot, uniqueID, species, unitAbund, scaleAbund, everything(), -guild) #project
+data_array<-array(0, dim=c(length(unique(dat$species)),length(unique(dat$uniqueID)),
+                           length(unique(dat$year))))
 
-# Create empty array for each taxon at each time point and location
-data_array <- array(NA, dim=c(length(unique(dat$species)),  # No. of taxa
-                              length(unique(dat$uniqueID)), # No. of unique subplots
-                              length(unique(dat$year))))    # No. of years
-
-# Fill array with the biomass of each taxon
-for(spp in unique(dat.spread$species)){
-  data_array[unique(dat.spread$species) == spp, , ] <- dat.spread %>%
-    dplyr::filter(species == spp) %>%
-    ungroup() %>%
-    dplyr::select(-c(site:scaleAbund)) %>%
-    as.matrix(.)
+for(spp in 1:length(unique(dat$species))){
+  for(loc in 1:length(unique(dat$uniqueID))){
+    for(yr in 1:length(unique(dat$year))){
+      if(any(dat$species==unique(dat$species)[spp] & dat$uniqueID==unique(dat$uniqueID)[loc]
+             & dat$year==unique(dat$year)[yr])){
+        data_array[spp,loc,yr]<-dat$abundance[dat$species==unique(dat$species)[spp] & dat$uniqueID==unique(dat$uniqueID)[loc]
+                                              & dat$year==unique(dat$year)[yr]]
+      }
+    }
+  }
 }
-
-# Remove temporary data objects
-rm(dat.spread, spp, tmp)
-
 
 # ---------------------------------------------------------------------------------------------
 # Check data
@@ -125,7 +114,7 @@ rm(dat.spread, spp, tmp)
 
 # ---------------------------------------------------------------------------------------------
 # Source functions for data checks
-source("GeogSynch/Scripts/format_L2_data/geog_synch_data_checks.R")
+source(here("empirical/dataChecks.R"))
 
 # ---------------------------------------------------------------------------------------------
 # What checks are available to view?
@@ -134,14 +123,11 @@ names(dat.summary)
 # ---------------------------------------------------------------------------------------------
 # Check number of taxa, nature of time series, nature of spatial units, nature of measurement units
 dat.summary$taxa.no
-
 dat.summary$year.min
 dat.summary$year.max
 dat.summary$year.no
-
 dat.summary$plot.no
 dat.summary$subplot.no
-
 dat.summary$abund.units
 
 
@@ -195,7 +181,7 @@ ggplot(data=no.taxa$no.taxa, aes(x=year, y=no.taxa)) +
   theme(aspect.ratio = 2/3) +
   guides(color = FALSE) +
   scale_x_continuous(breaks = seq(min(cuml.taxa.by.site$year), max(cuml.taxa.by.site$year), by = 2))
-ggsave(file = paste('GeogSynch/Manuscripts/1_Data_supplemental_methods/', dat.name, '_richness_over_time.pdf', sep= ""), width = 7, height = 4.7, units = "in")# Note that the thick line indicates the total number of taxa among all subplots
+ggsave(file = here("figures/supplement",paste(dat.name, '_richness_over_time.pdf', sep= "")), width = 7, height = 4.7, units = "in")# Note that the thick line indicates the total number of taxa among all subplots
 
 # Plot the cumulative number of taxa observed at each subplot, as well as across all subplots together
 ggplot(data=cuml.taxa.by.site, aes(x = year, y = no.taxa)) +
@@ -212,7 +198,7 @@ ggplot(data=cuml.taxa.by.site, aes(x = year, y = no.taxa)) +
   guides(color = FALSE) +
   scale_x_continuous(breaks = seq(min(cuml.taxa.by.site$year), max(cuml.taxa.by.site$year), by = 2))
 # Note that the thick line indicates the total number of taxa among all sites
-ggsave(file = paste('GeogSynch/Manuscripts/1_Data_supplemental_methods/', dat.name, '_sp_acc_curve.pdf', sep = ""), width = 7, height = 4.7, units = "in")
+ggsave(file = here("figures/supplement",paste(dat.name, '_sp_acc_curve.pdf', sep = "")), width = 7, height = 4.7, units = "in")
 
 #visualize spp accumulation curve over space and estimate number of species in 'regional species pool'(the asymptote):
 no.taxa.space <- cuml.taxa.space.fun(dat)
@@ -249,7 +235,7 @@ sapply(allmods, AIC)
 
 # Plot the cumulative number of taxa observed as plots are added, and add the Lomolino line:
 
-pdf(file=paste('GeogSynch/Manuscripts/1_Data_supplemental_methods/', dat.name, '_sp_acc_space.pdf', sep = ""), width = 7, height = 4.7)
+pdf(file=here("figures/supplement",paste(dat.name, '_sp_acc_space.pdf', sep = "")), width = 7, height = 4.7)
 plot(sites, no.taxa.space$no.taxa, pch = 19, xaxt="n", bty="l", xlab = "Cumulative number of sites", ylab = "Cumulative number of taxa", cex=1.5, lwd=3, cex.lab=1.5)
 axis(side=1, at = sites, labels = seq(1,length(no.taxa.space$site),1))
 lines(xtmp, predict(mlom, newdata=data.frame(sites=xtmp)), lwd=2)
@@ -272,22 +258,19 @@ mtdt$organism <- dat.domain
 mtdt$taxa <- "coral & algae"
 mtdt$abund.type <- "percent cover"
 mtdt$abund.units <- dat.summary$abund.units
-mtdt$extent <- dat.summary$dist.max
-mtdt$interplot.dist <- mean(dat.summary$dist.mat[lower.tri(dat.summary$dist.mat, diag=F)])
+mtdt$extent <- 17.294
+mtdt$interplot.dist <- 10.792
 mtdt <- data.frame(mtdt)
 #write metadata
-write.csv(mtdt, file = paste("GeogSynch/Scripts/make_site_table/site_summaries/", dat.name, "_metadata.csv", sep =""), row.names=F)
+write.csv(mtdt, file = here("empirical/site_summary_table",paste(dat.name, "_metadata.csv", sep ="")), row.names=F)
 
 #write L2 data
-write.csv(dat, file = "GeogSynch/L2_data/mcr_coral_algae_outer10.csv", row.names=F)
+#write.csv(dat, file = "GeogSynch/L2_data/mcr_coral_algae_outer10.csv", row.names=F)
 
 # ---------------------------------------------------------------------------------------------
 # Run synchrony analyses 
 # ---------------------------------------------------------------------------------------------
-
-no_habitats <- c(rep(1, dim(data_array)[2]))
-
-mcr_coral_algae_outer10_results <- CommSpatSynch(inarray = data_array)
+mcr_coral_algae_outer10_results <- CommSpatSynch(inarray = data_array, do.Mantel=F, do.Modularity=F)
 mcr_coral_algae_outer10_results$n.spp <- dim(data_array)[1]
 
-save(mcr_coral_algae_outer10_results, file = paste("GeogSynch/Scripts/format_L2_data/Output/", dat.name, "_results.RData", sep =""))
+saveRDS(mcr_coral_algae_outer10_results, file = here("empirical/analyses_by_site/output",paste(dat.name, "_results.rds", sep ="")))

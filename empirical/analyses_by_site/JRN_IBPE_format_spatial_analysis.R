@@ -271,5 +271,5 @@ jrn_ibpe_results <- CommSpatSynch(inarray=data_array, do.Modularity=FALSE, do.Ma
 #jrn_ibpe_results$n.habitats <- NA#length(unique(dat_habitats))
 jrn_ibpe_results$n.spp <- dim(data_array)[1]
 
-write_rds(jrn_ibpe_results, file = here("empirical/analyses_by_site/output",paste(dat.name, "_results.rds", sep ="")))
+saveRDS(jrn_ibpe_results, file = here("empirical/analyses_by_site/output",paste(dat.name, "_results.rds", sep ="")))
 

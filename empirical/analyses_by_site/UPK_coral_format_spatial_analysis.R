@@ -6,42 +6,60 @@
 # and Jon Walter, University of Virginia, jaw3es@virginia.edu
 # Created 2019-11-21
 # ---------------------------------------------------------------------------------------------
-rm(list = ls())
+rm(list=ls())
 # ---------------------------------------------------------------------------------------------
-## Data manipulation packages
+# Source combined data from EDI
 # ---------------------------------------------------------------------------------------------
-# Load or install necessary libraries
-for (package in c('tidyverse', 'dplyr', 'ggplot2', 'ecodist', 'abind', 'geosphere', 'rgdal',
-                  'maps', 'reshape2', 'codyn', 'igraph', 'vegan', 'devtools')) {
-  if (!require(package, character.only=T, quietly=T)) {
-    install.packages(package)
-    library(package, character.only=T)
-  }
-}
+# Package ID: edi.437.1 Cataloging System:https://pasta.edirepository.org.
+# Data set title: Benthic algae and sessile invertebrate survey data from LTER and other reef ecosystems.
+# Data set creator:  Lauren Hallett - University of Oregon
+# Data set creator:  Max Castorani - University of Virginia
+# Data set creator:  Nina Lany - US Forest Service
+# Data set creator:  Daniel Reed - SBC LTER 
+# Data set creator:  Peter Edmunds - USVI, MCR LTER 
+# Data set creator:  Robert Carpenter - MCR LTER 
+# Contact:  Nina Lany - US Forest Service - Nina.Lany@usda.gov
+# Stylesheet v2.7 for metadata conversion into program: John H. Porter, Univ. Virginia, jporter@virginia.edu 
+
+inUrl2  <- "https://pasta-s.lternet.edu/package/data/eml/edi/437/1/d9c5d73d11fc6a16ec41139b63b27751" 
+infile2 <- tempfile()
+download.file(inUrl2,infile2,method="curl")
 
 
-# Source local version of CommSpatSynch that removed NMDS analysis
-source("GeogSynch/Scripts/CommSpatSynch_v3.R")
+marine <-read.csv(infile2,header=F 
+                  ,skip=1
+                  ,sep=","  
+                  ,quot='"' 
+                  , col.names=c(
+                    "year",     
+                    "site",     
+                    "habitat",     
+                    "plot",     
+                    "subplot",     
+                    "uniqueID",     
+                    "guild",     
+                    "species",     
+                    "abundance",     
+                    "unitAbund",     
+                    "scaleAbund"    ), check.names=TRUE, stringsAsFactors=FALSE)
 
+rm(infile2,inUrl2)
+
+# Source analysis routine script
+source(here("CommSpatSynch_v3.R"))
 
 # ---------------------------------------------------------------------------------------------
-# Load datasets
+# Select data
 # ---------------------------------------------------------------------------------------------
-# Source preliminarily-formatted data
-source("Data_cleaning/florida_hawaii_coral_cleaning.R")
-rm(hawaii.data_clean)
-
+dat<-marine[marine$site=="Florida_Keys",]
+dat<-dat[dat$plot %in% c("Admiral","Carysfort_Deep","Carysfort_Shallow","Conch_Deep","Conch_Shallow",
+                         "Grecian_Rocks","Molasses_Deep","Molasses_Shallow","Porter_Patch","Turtle"),]
 # ---------------------------------------------------------------------------------------------
 # Clone specific data sets with a generic name
 dat.name <- 'upk_coral'
 dat.site <- 'upper_keys'
 #dat.habitat <- ###
 dat.domain <- 'marine'
-
-dat <- florida.data_clean[florida.data_clean$plot %in% coral.geo.data$plot[coral.geo.data$sub.location=="Upper_Keys"],]; rm(florida.data_clean)
-
-coords <- coral.geo.data[coral.geo.data$sub.location=="Upper_Keys",]; rm(coral.geo.data)
-
 
 # ---------------------------------------------------------------------------------------------
 # Compute frequencies of occurrence and exclude very rare species
@@ -66,32 +84,23 @@ dat <- dat[dat$species %in% sppset, ]
 
 
 # ---------------------------------------------------------------------------------------------
-# For later reumanplatz package, create a data array based on taxon abundance at each space-time sampling point
+# create a data array based on taxon abundance at each space-time sampling point
 # ---------------------------------------------------------------------------------------------
 
-# First spread the abundance of each taxon over years
-dat.spread <- dat %>%
-  group_by(species) %>%
-  spread(key = year, value = abundance, fill = 0) %>%
-  dplyr::select(site, habitat, plot, subplot, uniqueID, species, unitAbund, scaleAbund, everything(), -guild)
+data_array<-array(0, dim=c(length(unique(dat$species)),length(unique(dat$uniqueID)),
+                           length(unique(dat$year))))
 
-# Create empty array for each taxon at each time point and location
-data_array <- array(NA, dim=c(length(unique(dat$species)),  # No. of taxa
-                              length(unique(dat$uniqueID)), # No. of unique subplots
-                              length(unique(dat$year))))    # No. of years
-
-# Fill array with the biomass of each taxon
-for(spp in unique(dat.spread$species)){
-  data_array[unique(dat.spread$species) == spp, , ] <- dat.spread %>%
-    dplyr::filter(species == spp) %>%
-    ungroup() %>%
-    dplyr::select(-c(site:scaleAbund)) %>%
-    as.matrix(.)
+for(spp in 1:length(unique(dat$species))){
+  for(loc in 1:length(unique(dat$uniqueID))){
+    for(yr in 1:length(unique(dat$year))){
+      if(any(dat$species==unique(dat$species)[spp] & dat$uniqueID==unique(dat$uniqueID)[loc]
+             & dat$year==unique(dat$year)[yr])){
+        data_array[spp,loc,yr]<-dat$abundance[dat$species==unique(dat$species)[spp] & dat$uniqueID==unique(dat$uniqueID)[loc]
+                                              & dat$year==unique(dat$year)[yr]]
+      }
+    }
+  }
 }
-
-# Remove temporary data objects
-rm(dat.spread, spp)
-
 
 # ---------------------------------------------------------------------------------------------
 # Check data
@@ -99,7 +108,7 @@ rm(dat.spread, spp)
 
 # ---------------------------------------------------------------------------------------------
 # Source functions for data checks
-source("GeogSynch/Scripts/format_L2_data/geog_synch_data_checks.R")
+source(here("empirical/dataChecks.R"))
 
 # ---------------------------------------------------------------------------------------------
 # What checks are available to view?
@@ -108,14 +117,11 @@ names(dat.summary)
 # ---------------------------------------------------------------------------------------------
 # Check number of taxa, nature of time series, nature of spatial units, nature of measurement units
 dat.summary$taxa.no
-
 dat.summary$year.min
 dat.summary$year.max
 dat.summary$year.no
-
 dat.summary$plot.no
 dat.summary$subplot.no
-
 dat.summary$abund.units
 
 # ---------------------------------------------------------------------------------------------
@@ -168,7 +174,7 @@ ggplot(data=no.taxa$no.taxa, aes(x=year, y=no.taxa)) +
   theme(aspect.ratio = 2/3) +
   guides(color = FALSE) +
   scale_x_continuous(breaks = seq(min(cuml.taxa.by.site$year), max(cuml.taxa.by.site$year), by = 2))
-ggsave(file = paste('GeogSynch/Manuscripts/1_Data_supplemental_methods/', dat.name, '_richness_over_time.pdf', sep= ""), width = 7, height = 4.7, units = "in")# Note that the thick line indicates the total number of taxa among all subplots
+ggsave(file = here("figures/supplement",paste(dat.name, '_richness_over_time.pdf', sep= "")), width = 7, height = 4.7, units = "in")# Note that the thick line indicates the total number of taxa among all subplots
 
 # Plot the cumulative number of taxa observed at each subplot, as well as across all subplots together
 ggplot(data=cuml.taxa.by.site, aes(x = year, y = no.taxa)) +
@@ -185,7 +191,7 @@ ggplot(data=cuml.taxa.by.site, aes(x = year, y = no.taxa)) +
   guides(color = FALSE) +
   scale_x_continuous(breaks = seq(min(cuml.taxa.by.site$year), max(cuml.taxa.by.site$year), by = 2))
 # Note that the thick line indicates the total number of taxa among all sites
-ggsave(file = paste('GeogSynch/Manuscripts/1_Data_supplemental_methods/', dat.name, '_sp_acc_curve.pdf', sep = ""), width = 7, height = 4.7, units = "in")
+ggsave(file = here("figures/supplement",paste(dat.name, '_sp_acc_curve.pdf', sep = "")), width = 7, height = 4.7, units = "in")
 
 #visualize spp accumulation curve over space and estimate number of species in 'regional species pool'(the asymptote):
 no.taxa.space <- cuml.taxa.space.fun(dat)
@@ -221,7 +227,7 @@ mmic; confint(mmic)
 
 # Plot the cumulative number of taxa observed as plots are added, and add the MicMen line:
 
-pdf(file=paste('GeogSynch/Manuscripts/1_Data_supplemental_methods/', dat.name, '_sp_acc_space.pdf', sep = ""), width = 7, height = 4.7)
+pdf(file=here("figures/supplement",paste(dat.name, '_sp_acc_space.pdf', sep = "")), width = 7, height = 4.7)
 plot(sites, no.taxa.space$no.taxa, pch = 19, xaxt="n", bty="l", xlab = "Cumulative number of sites", ylab = "Cumulative number of taxa", cex=1.5, lwd=3, cex.lab=1.5)
 axis(side=1, at = sites, labels = seq(1,length(no.taxa.space$site),1))
 lines(xtmp, predict(mmic, newdata=data.frame(sites=xtmp)), lwd=2)
@@ -244,16 +250,14 @@ mtdt$organism <- dat.domain
 mtdt$taxa <- "coral"
 mtdt$abund.type <- "percent cover"
 mtdt$abund.units <- dat.summary$abund.units
-mtdt$extent <- dat.summary$dist.max
-mtdt$interplot.dist <- mean(dat.summary$dist.mat[lower.tri(dat.summary$dist.mat, diag=F)])
+mtdt$extent <- 44.684
+mtdt$interplot.dist <- 19.563
 mtdt <- data.frame(mtdt)
 #write metadata
-write.csv(mtdt, file = paste("GeogSynch/Scripts/make_site_table/site_summaries/", dat.name, "_metadata.csv", sep =""), row.names=F)
+write.csv(mtdt, file = here("empirical/site_summary_table",paste(dat.name, "_metadata.csv", sep ="")), row.names=F)
 
 #write L2 data
-write.csv(dat, file = "GeogSynch/L2_data/upk_coral.csv", row.names=F)
-
-
+#write.csv(dat, file = "GeogSynch/L2_data/upk_coral.csv", row.names=F)
 
 
 # ---------------------------------------------------------------------------------------------
@@ -265,6 +269,6 @@ upk_coral_results <- CommSpatSynch(inarray = data_array, do.Modularity = F, do.M
 
 upk_coral_results$n.spp <- dim(data_array)[1]
 
-save(upk_coral_results, file = paste("GeogSynch/Scripts/format_L2_data/Output/", dat.name, "_results.RData", sep =""))
+saveRDS(upk_coral_results, file = here("empirical/analyses_by_site/output",paste(dat.name, "_results.rds", sep ="")))
 
 

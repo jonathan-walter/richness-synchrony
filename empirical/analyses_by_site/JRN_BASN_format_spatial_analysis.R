@@ -279,5 +279,5 @@ no_habitats <- c(rep(1, dim(data_array)[2]))
 jrn_basn_results <- CommSpatSynch(inarray = data_array, do.Modularity=F, do.Mantel=F)
 jrn_basn_results$n.spp <- dim(data_array)[1]
 
-write_rds(jrn_basn_results, file = here("empirical/analyses_by_site/output",paste(dat.name, "_results.rds", sep ="")))
+saveRDS(jrn_basn_results, file = here("empirical/analyses_by_site/output",paste(dat.name, "_results.rds", sep ="")))
 

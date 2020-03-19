@@ -273,5 +273,5 @@ write.csv(mtdt, file = here("empirical/site_summary_table",paste(dat.name, "_met
 knz_f_upland_results <- CommSpatSynch(inarray = data_array, do.Modularity = F, do.Mantel = F)
 knz_f_upland_results$n.spp <- dim(data_array)[1]
 
-write_rds(knz_f_upland_results, file = here("empirical/analyses_by_site/output",paste(dat.name, "_results.rds", sep ="")))
+saveRDS(knz_f_upland_results, file = here("empirical/analyses_by_site/output",paste(dat.name, "_results.rds", sep ="")))
 

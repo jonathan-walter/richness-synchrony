@@ -275,6 +275,6 @@ write.csv(mtdt, file = here("empirical/site_summary_table",paste(dat.name, "_met
 mcr_coral_algae_backreef_results <- CommSpatSynch(inarray = data_array, do.Mantel=F, do.Modularity=F)
 mcr_coral_algae_backreef_results$n.spp <- dim(data_array)[1]
 
-write_rds(mcr_coral_algae_backreef_results, file = here("empirical/analyses_by_site/output",paste(dat.name, "_results.rds", sep ="")))
+saveRDS(mcr_coral_algae_backreef_results, file = here("empirical/analyses_by_site/output",paste(dat.name, "_results.rds", sep ="")))
 
 

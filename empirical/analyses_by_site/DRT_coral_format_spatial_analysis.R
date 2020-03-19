@@ -88,29 +88,20 @@ dat <- dat[dat$species %in% sppset, ]
 # For later analyses, create a data array based on taxon abundance at each space-time sampling point
 # ---------------------------------------------------------------------------------------------
 
-# First spread the abundance of each taxon over years
-dat.spread <- dat %>%
-  group_by(species) %>%
-  spread(key = year, value = abundance, fill = 0) %>%
-  dplyr::select(site, habitat, plot, subplot, uniqueID, species, unitAbund, scaleAbund, everything(), -guild)
+data_array<-array(0, dim=c(length(unique(dat$species)),length(unique(dat$uniqueID)),
+                           length(unique(dat$year))))
 
-# Create empty array for each taxon at each time point and location
-data_array <- array(NA, dim=c(length(unique(dat$species)),  # No. of taxa
-                              length(unique(dat$uniqueID)), # No. of unique subplots
-                              length(unique(dat$year))))    # No. of years
-
-# Fill array with the biomass of each taxon
-for(spp in unique(dat.spread$species)){
-  data_array[unique(dat.spread$species) == spp, , ] <- dat.spread %>%
-    dplyr::filter(species == spp) %>%
-    ungroup() %>%
-    dplyr::select(-c(site:scaleAbund)) %>%
-    as.matrix(.)
+for(spp in 1:length(unique(dat$species))){
+  for(loc in 1:length(unique(dat$uniqueID))){
+    for(yr in 1:length(unique(dat$year))){
+      if(any(dat$species==unique(dat$species)[spp] & dat$uniqueID==unique(dat$uniqueID)[loc]
+             & dat$year==unique(dat$year)[yr])){
+        data_array[spp,loc,yr]<-dat$abundance[dat$species==unique(dat$species)[spp] & dat$uniqueID==unique(dat$uniqueID)[loc]
+                                              & dat$year==unique(dat$year)[yr]]
+      }
+    }
+  }
 }
-
-# Remove temporary data objects
-rm(dat.spread, spp)
-
 
 # ---------------------------------------------------------------------------------------------
 # Check data
@@ -280,6 +271,6 @@ drt_coral_results <- CommSpatSynch(inarray = data_array, do.Modularity = F, do.M
 
 drt_coral_results$n.spp <- dim(data_array)[1]
 
-write_rds(drt_coral_results, file = here("empirical/analyes_by_site/output",paste(dat.name, "_results.rds", sep ="")))
+saveRDS(drt_coral_results, file = here("empirical/analyses_by_site/output",paste(dat.name, "_results.rds", sep ="")))
 
 
