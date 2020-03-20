@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "2110410064",
     "id" : "994FF64F",
-    "lastKnownWriteTime" : 1584548218,
-    "last_content_update" : 1584548218204,
+    "lastKnownWriteTime" : 1584715749,
+    "last_content_update" : 1584715749303,
     "path" : "~/GitHub/richness-synchrony/empirical/runAllAnalyses.R",
     "project_path" : "empirical/runAllAnalyses.R",
     "properties" : {
-        "cursorPosition" : "18,0",
-        "scrollLine" : "0"
+        "cursorPosition" : "35,79",
+        "scrollLine" : "1"
     },
     "relative_order" : 1,
     "source_on_save" : false,

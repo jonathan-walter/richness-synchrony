@@ -36,9 +36,7 @@ source(here("empirical/analyses_by_site/UPK_coral_format_spatial_analysis.R"))
 source(here("empirical/analyses_by_site/USVI_coral_format_spatial_analysis.R"))
 
 ## Make table of site information -----------------------------------------------------------------
-source("./GeogSynch/Scripts/make_site_table/make_site_table.R")
+source(here("empirical/site_summary_table/makeSiteTable.R"))
 
-## Collate results of synchrony significance tests ------------------------------------------------
-source("./GeogSynch/Scripts/empirical_analyses/synch_sig_summary.R")
-
-## Make 
+## Make manuscript figures ------------------------------------------------------------------------
+source(here("manuscriptFigures.R"))
