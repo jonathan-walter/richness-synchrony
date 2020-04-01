@@ -54,3 +54,6 @@ library('xtable')
 
 table1 <- metadata_table[,c("dataset", "initial.year", "study.length", "n.plots", "extent", "taxa", "n.taxa","abund.type","abund.units")]
 print(xtable(table1))
+
+table2 <- response_vars[,c("dataset","rRichness","p.rRichness")]
+print(xtable(table2,digits=3))
