@@ -72,6 +72,7 @@ for (i in 1:num) {
   
   # set starting conditions equal to carrying capacities
   N <- array(rep(NA, species*time*patches), dim=c(species, patches, time))
+  N_pre <- array(rep(NA, species*time*patches), dim=c(species, patches, time))
   N[,,1] <- K
   
   # set demographic and environmental timeseries
@@ -90,12 +91,13 @@ for (i in 1:num) {
   
   # run abundance model
   for (t in 1:(time-1)) {
+    pre_disp <- N[,,t]
+    # dispersal; temp update N with the pre-growth population sizes
+    N_pre[,,t] <- run.global.dispersal(pre_disp, disp_rate, patches, species)
     # patch model
-    pre_disp <- run.patch.model(N, r, K, beta, sigma_env, sigma_dem, species, patches, t, env, dem)
-    # dispersal
-    post_disp <- run.global.dispersal(pre_disp, disp_rate, patches, species)
+    post_growth <- run.patch.model(N_pre, r, K, beta, sigma_env, sigma_dem, species, patches, t, env, dem)
     # update N array
-    N[,,t+1] <- post_disp
+    N[,,t+1] <- post_growth
   }
   
   # remove species that went extinct
