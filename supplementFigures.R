@@ -11,7 +11,7 @@ emp.dat<-read.csv(here("empirical/analysisvars_table.csv"), stringsAsFactors = F
 #load theory data -- this CSV was assembled offline from cluster output. We are providing the
 #results, and simulation model function R script; see manuscript for a description of the
 #distributions parameter values were drawn from.
-thry.dat<-read.csv(here("theory/pre_disp_theory_output.csv"))
+thry.dat<-read.csv(here("theory/theory_output.csv"))
 
 ## ---------------------------------------------------------------------------------------
 ## Figure 1: Is there spatial synchrony in species richness?
@@ -24,7 +24,7 @@ emp.fig1$displayname<-c("HAY","JRG","JRN-BASN","JRN-IBPE","JRN-SUMM","KNZ-UP","K
 bb<-rgb(0,114,178,255,maxColorValue=255)
 bg<-rgb(0,148,115,255,maxColorValue=255)
 
-pdf(here("pre_disp_figures/main/Fig1_richsynch_combined.pdf"), width=6.5, height=3.25)
+pdf(here("figures/main/Fig1_richsynch_combined.pdf"), width=6.5, height=3.25)
 
 layout(matrix(c(1,2),nrow=1),widths=c(0.45,0.55))
 
@@ -90,7 +90,7 @@ error.bar <- function(x, y, upper, lower=upper, length=0.1,...){
 pal=c(rgb(0,0,0,255,maxColorValue=255),rgb(230,159,0,255,maxColorValue=255),rgb(86,180,233,255,maxColorValue=255))
 
 
-pdf(here("pre_disp_figures/main/Fig2_thry_effects.pdf"), width=3.25, height=3.25)
+pdf(here("figures/main/Fig2_thry_effects.pdf"), width=3.25, height=3.25)
 
 par(mar=c(6.1,3.5,0.7,0.7), tcl=-0.4, mgp=c(1,0.5,0))
 
@@ -123,7 +123,7 @@ summary(emp.effects)
 thry.effects2<-lm(rRichness~AvgPlotRich+Evenness+Jaccard+Turnover, data=thry.std)
 summary(thry.effects2)
 
-pdf(here("pre_disp_figures/main/Fig3_emp_effects.pdf"), width=3.25, height=3.25)
+pdf(here("figures/main/Fig3_emp_effects.pdf"), width=3.25, height=3.25)
 
 par(mar=c(4.1,3.5,0.7,0.7), tcl=-0.4, mgp=c(1,0.5,0))
 
@@ -156,7 +156,7 @@ fit5<-lm(thry.dat$cv~thry.dat$AvgPlotRich)
 fit6<-lm(emp.dat$CVTotBiomass~emp.dat$AvgPlotRich)
 cor.test(emp.dat$CVTotBiomass,emp.dat$AvgPlotRich)
 
-pdf(here("pre_disp_figures/main/Fig4_cv_richsynch.pdf"), width=6.5, height=6.5)
+pdf(here("figures/main/Fig4_cv_richsynch.pdf"), width=6.5, height=6.5)
 
 par(mar=c(3.1,3.1,1.5,0.5), tcl=-0.4, mgp=c(1.75,0.5,0), mfcol=c(2,2), oma=c(0,0,0,0.6))
 
@@ -164,31 +164,51 @@ plot(thry.dat$rRichness, thry.dat$cv, xlab="Richness synchrony", ylab="Community
      pch=20, col="grey")
 abline(fit3, lwd=2)
 #mtext("Theoretical",3,line=0.2)
-mtext(expression(paste(italic(R2),"=0.48, ",italic(beta),"=0.28")),3,line=-1.3,cex=0.9)
+mtext(expression(paste(italic(R)^2,"=0.42, ",hat(beta),"=0.25")),3,line=-1.65,cex=0.9)
+#mtext(expression(paste(italic(r),"=0.65")),3,line=-1.3,cex=0.9)
 mtext("A)",at=0.01,line=-1.3)
 
 plot(emp.dat$rRichness, emp.dat$CVTotBiomass, xlab="Richness synchrony", ylab="Community CV", xlim=c(0,1), 
      ylim=c(0,1), pch=20, col=ptcol, cex=1.75)
 abline(fit4,lwd=2)
 #mtext("Empirical",3,line=0.2)
-mtext(expression(paste(italic(r),"=0.65, ",italic(p),"=0.002, ",italic(beta),"=0.58")),3,line=-1.3,cex=0.9)
+mtext(expression(paste(italic(R)^2,"=0.43, ",italic(p),"=0.002, ",hat(beta),"=0.58")),3,line=-1.65,cex=0.9)
+#mtext(expression(paste(italic(r),"=0.65, ",italic(p),"=0.002")),3,line=-1.3,cex=0.9)
 mtext("C)",at=0.01,line=-1.3)
 
 plot(thry.dat$AvgPlotRich, thry.dat$cv, xlab="Richness", ylab="Community CV", ylim=c(0,1), pch=20, col="grey")
 abline(fit5,lwd=2)
-mtext(expression(paste(italic(R2),"=0.02, ",italic(beta),"=-0.0006")),3,line=-1.3,cex=0.9)
+mtext(expression(paste(italic(R)^2,"=0.02, ", hat(beta),"=-0.0006")),3,line=-1.65,cex=0.9)
+#mtext(expression(paste(italic(r),"=-0.15")),3,line=-1.3,cex=0.9)
 mtext("B)",at=20,line=-1.3)
 
 plot(emp.dat$AvgPlotRich, emp.dat$CVTotBiomass, xlab="Richness", ylab="Community CV", ylim=c(0,1), pch=20, col=ptcol,cex=1.75)
 abline(fit6,lwd=2)
-mtext(expression(paste(italic(r),"=-0.37, ",italic(p),"=0.11, ",italic(beta),"=-0.02")),3,line=-1.3,cex=0.9)
-legend("topright",legend=rev(c("Grassland","Marine")),pch=20,col=rev(c(bg,bb)), inset=c(0.03,0.1), cex=1.1)
+mtext(expression(paste(italic(R)^2,"=0.13, ",hat(beta), "=-0.02, ",italic(p),"=0.11")),3,line=-1.65,cex=0.9)
+#mtext(expression(paste(italic(r),"=-0.37, ",italic(p),"=0.11")),3,line=-1.3,cex=0.9)
+legend("topright",legend=rev(c("Grassland","Marine")),pch=20,col=rev(c(bg,bb)), inset=c(0.03,0.11), cex=1.1)
 mtext("D)",at=4.5,line=-1.3)
 
 dev.off()
 
-fit3a<-lm(thry.dat$cv~scale(thry.dat$rRichness))
-fit5a<-lm(thry.dat$cv~scale(thry.dat$AvgPlotRich))
-fit4a<-lm(emp.dat$CVTotBiomass~scale(emp.dat$rRichness))
-fit6a<-lm(emp.dat$CVTotBiomass~scale(emp.dat$AvgPlotRich))
+# fit3a<-lm(thry.dat$cv~scale(thry.dat$rRichness))
+# fit5a<-lm(thry.dat$cv~scale(thry.dat$AvgPlotRich))
+# fit4a<-lm(emp.dat$CVTotBiomass~scale(emp.dat$rRichness))
+# fit6a<-lm(emp.dat$CVTotBiomass~scale(emp.dat$AvgPlotRich))
+
+
+summary(lm(thry.dat$cv~thry.dat$rRichness))
+summary(lm(thry.dat$cv~thry.dat$AvgPlotRich))
+summary(lm(thry.dat$cv~thry.dat$Evenness))
+summary(lm(thry.dat$cv~thry.dat$Turnover))
+summary(lm(thry.dat$cv~thry.dat$Jaccard))
+
+
+
+summary(lm(emp.dat$CVTotBiomass~emp.dat$rRichness))
+summary(lm(emp.dat$CVTotBiomass~emp.dat$AvgPlotRich))
+summary(lm(emp.dat$CVTotBiomass~emp.dat$Evenness))
+summary(lm(emp.dat$CVTotBiomass~emp.dat$Turnover))
+summary(lm(emp.dat$CVTotBiomass~emp.dat$Jaccard))
+
           

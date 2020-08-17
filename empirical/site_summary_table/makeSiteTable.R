@@ -39,7 +39,7 @@ response_vars <- as.data.frame(response_vars)
 response_vars$dataset<-dataset.name
 
 response_vars <-response_vars[,colnames(response_vars) %in% c("AvgPlotRich","Evenness","Turnover","Jaccard","CVTotBiomass","LoreauSynch",
-                                                             "VarRatio","rRichness","sd.rRichness","p.rRichness","dataset")]
+                                                             "VarRatio","rRichness","sd.rRichness","p.rRichness", "rSppMean","dataset")]
 
 ## ---------------------------------------
 ## Merge environmental variables and response variables into the table ##
