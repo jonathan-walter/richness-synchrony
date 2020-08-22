@@ -24,7 +24,7 @@ emp.fig1$displayname<-c("HAY","JRG","JRN-BASN","JRN-IBPE","JRN-SUMM","KNZ-UP","K
 bb<-rgb(0,114,178,255,maxColorValue=255)
 bg<-rgb(0,148,115,255,maxColorValue=255)
 
-pdf(here("pre_disp_figures/main/Fig1_richsynch_combined.pdf"), width=6.5, height=3.25)
+pdf(here("figures/main/Fig1_richsynch_combined.pdf"), width=6.5, height=3.25)
 
 layout(matrix(c(1,2),nrow=1),widths=c(0.45,0.55))
 
@@ -90,7 +90,7 @@ error.bar <- function(x, y, upper, lower=upper, length=0.1,...){
 pal=c(rgb(0,0,0,255,maxColorValue=255),rgb(230,159,0,255,maxColorValue=255),rgb(86,180,233,255,maxColorValue=255))
 
 
-pdf(here("pre_disp_figures/main/Fig2_thry_effects.pdf"), width=3.25, height=3.25)
+pdf(here("figures/main/Fig2_thry_effects.pdf"), width=3.25, height=3.25)
 
 par(mar=c(6.1,3.5,0.7,0.7), tcl=-0.4, mgp=c(1,0.5,0))
 
@@ -123,7 +123,7 @@ summary(emp.effects)
 thry.effects2<-lm(rRichness~AvgPlotRich+Evenness+Jaccard+Turnover, data=thry.std)
 summary(thry.effects2)
 
-pdf(here("pre_disp_figures/main/Fig3_emp_effects.pdf"), width=3.25, height=3.25)
+pdf(here("figures/main/Fig3_emp_effects.pdf"), width=3.25, height=3.25)
 
 par(mar=c(4.1,3.5,0.7,0.7), tcl=-0.4, mgp=c(1,0.5,0))
 
@@ -160,7 +160,7 @@ fit6<-lm(emp.dat$CVTotBiomass~emp.dat$AvgPlotRich)
 cor.test(emp.dat$CVTotBiomass,emp.dat$AvgPlotRich)
 summary(fit6)
 
-pdf(here("pre_disp_figures/main/Fig4_cv_richsynch.pdf"), width=6.5, height=6.5)
+pdf(here("figures/main/Fig4_cv_richsynch.pdf"), width=6.5, height=6.5)
 
 par(mar=c(3.1,3.1,1.5,0.5), tcl=-0.4, mgp=c(1.75,0.5,0), mfcol=c(2,2), oma=c(0,0,0,0.6))
 
