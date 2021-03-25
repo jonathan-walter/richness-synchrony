@@ -73,13 +73,12 @@ SimFunc <- function(i){
   
   # run abundance model
   for (t in 1:(time-1)) {
-    pre_disp <- N[,,t]
-    # dispersal; temp update N with the pre-growth population sizes
-    N_pre[,,t] <- run.global.dispersal(pre_disp, disp_rate, patches, species)
     # patch model
-    post_growth <- run.patch.model(N_pre, r, K, beta, sigma_env, sigma_dem, species, patches, t, env, dem)
+    pre_disp <- run.patch.model(N, r, K, beta, sigma_env, sigma_dem, species, patches, t, env, dem)
+    # dispersal
+    post_disp <- run.global.dispersal(pre_disp, disp_rate, patches, species)
     # update N array
-    N[,,t+1] <- post_growth
+    N[,,t+1] <- post_disp
   }
   
   # remove species that went extinct
@@ -134,6 +133,6 @@ Sims <- clusterApply(cl, x = 1:NumSims, fun = SimFunc)
 
 # Ssave as an R dataframe
 results <- Sims
-save(results, file = "paramsfull_dispersal_pre_results.rdata")
+save(results, file = "paramsfull_dispersal_post_results.rdata")
 
 
