@@ -5,7 +5,7 @@ rm(list = ls())
 
 # Load or install necessary libraries
 for (package in c('tidyverse', 'dplyr', 'ggplot2', 'ecodist', 'abind', 'geosphere', 'rgdal',
-                  'maps', 'reshape2', 'codyn', 'igraph', 'vegan', 'devtools','here','wsyn')) {
+                  'maps', 'reshape2', 'codyn', 'igraph', 'vegan', 'devtools','here','wsyn','betapart')) {
   if (!require(package, character.only=T, quietly=T)) {
     install.packages(package)
     library(package, character.only=T)
