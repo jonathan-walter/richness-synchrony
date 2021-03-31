@@ -1,9 +1,9 @@
 {
-    "path" : "~/GitHub/richness-synchrony",
-    "sortOrder" : [
+    "path": "~/GitHub/richness-synchrony",
+    "sortOrder": [
         {
-            "ascending" : true,
-            "columnIndex" : 2
+            "ascending": true,
+            "columnIndex": 2
         }
     ]
 }

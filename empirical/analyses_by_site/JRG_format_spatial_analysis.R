@@ -49,7 +49,7 @@ grasslands <-read.csv(infile1,header=F
 rm(infile1,inUrl1)
 
 # Source analysis routine script
-source(here("CommSpatSynch_v3.R"))
+source(here("CommSpatSynch_v4.R"))
 ## Data cleaning and formatting #######################################################
 
 dat<-grasslands[grasslands$site=="jrg",]

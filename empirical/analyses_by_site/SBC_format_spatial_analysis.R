@@ -47,7 +47,7 @@ marine <-read.csv(infile2,header=F
 rm(infile2,inUrl2)
 
 # Source analysis routine script
-source(here("CommSpatSynch_v3.R"))
+source(here("CommSpatSynch_v4.R"))
 
 # ---------------------------------------------------------------------------------------------
 # Select data
