@@ -38,7 +38,7 @@ for(i in 1:length(dataset.name)){
 response_vars <- as.data.frame(response_vars)
 response_vars$dataset<-dataset.name
 
-response_vars <-response_vars[,colnames(response_vars) %in% c("AvgPlotRich","Evenness","Turnover","Jaccard","CVTotBiomass","LoreauSynch",
+response_vars <-response_vars[,colnames(response_vars) %in% c("AvgPlotRich","Evenness","Turnover","Jaccard","Jacc.tu","Jacc.ne","CVTotBiomass","LoreauSynch",
                                                              "VarRatio","rRichness","sd.rRichness","p.rRichness", "rSppMean","dataset")]
 
 ## ---------------------------------------

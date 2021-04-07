@@ -109,16 +109,22 @@ dev.off()
 ##--------------------------------------------------------------------
 ## Figure 3: Empirical effects
 
-emp.std<-emp.dat[,colnames(emp.dat) %in% c("rRichness","organism","extent","n.taxa.regional","Evenness","Jaccard","Turnover","AvgPlotRich")]
+emp.std<-emp.dat[,colnames(emp.dat) %in% c("rRichness","organism","extent","n.taxa.regional","Evenness","Jaccard",
+                                           "Jacc.tu","Jacc.ne","Turnover","AvgPlotRich")]
 emp.std$extent<-scale(emp.std$extent)
 emp.std$n.taxa.regional<-scale(emp.std$n.taxa.regional)
 emp.std$Evenness<-scale(emp.std$Evenness)
 emp.std$Jaccard<-scale(emp.std$Jaccard)
+emp.std$Jacc.tu<-scale(emp.std$Jacc.tu)
+emp.std$Jacc.ne<-scale(emp.std$Jacc.ne)
 emp.std$Turnover<-scale(emp.std$Turnover)
 emp.std$AvgPlotRich<-scale(emp.std$AvgPlotRich)
 
 emp.effects<-lm(rRichness~organism+extent+AvgPlotRich+Evenness+Jaccard+Turnover, data=emp.std)
 summary(emp.effects)
+
+emp.effects2<-lm(rRichness~organism+extent+AvgPlotRich+Evenness+Jacc.tu+Jacc.ne+Turnover, data=emp.std)
+summary(emp.effects2)
 
 thry.effects2<-lm(rRichness~AvgPlotRich+Evenness+Jaccard+Turnover, data=thry.std)
 summary(thry.effects2)
@@ -148,17 +154,19 @@ fit3<-lm(thry.dat$cv~thry.dat$rRichness)
 cor.test(thry.dat$cv,thry.dat$rRichness)
 summary(fit3)
 
-fit4<-lm(emp.dat$CVTotBiomass~emp.dat$rRichness)
-cor.test(emp.dat$CVTotBiomass,emp.dat$rRichness)
+fit4<-lm(I(1/emp.dat$CVTotBiomass)~emp.dat$rRichness)
+cor.test(1/emp.dat$CVTotBiomass,emp.dat$rRichness)
 summary(fit4)
 
 cor.test(thry.dat$cv,thry.dat$AvgPlotRich)
 fit5<-lm(thry.dat$cv~thry.dat$AvgPlotRich)
 summary(fit5)
 
-fit6<-lm(emp.dat$CVTotBiomass~emp.dat$AvgPlotRich)
-cor.test(emp.dat$CVTotBiomass,emp.dat$AvgPlotRich)
+fit6<-lm(I(1/emp.dat$CVTotBiomass)~emp.dat$AvgPlotRich)
+cor.test(1/emp.dat$CVTotBiomass,emp.dat$AvgPlotRich)
 summary(fit6)
+
+#### <-------------------- THIS FIGURE NEEDS UPDATING SO TEXT IS CONSISTENT WITH 1/CV ---------------------------
 
 pdf(here("figures/main/Fig4_cv_richsynch.pdf"), width=6.5, height=6.5)
 
@@ -172,8 +180,7 @@ mtext(expression(paste(italic(R)^2,"=0.48, ",hat(beta),"=0.28")),3,line=-1.65,ce
 #mtext(expression(paste(italic(R2),"=0.48, ",italic(beta),"=0.28")),3,line=-1.3,cex=0.9)
 mtext("A)",at=0.01,line=-1.3)
 
-plot(emp.dat$rRichness, emp.dat$CVTotBiomass, xlab="Richness synchrony", ylab="Community CV", xlim=c(0,1), 
-     ylim=c(0,1), pch=20, col=ptcol, cex=1.75)
+plot(emp.dat$rRichness, 1/emp.dat$CVTotBiomass, xlab="Richness synchrony", ylab="Community CV", xlim=c(0,1), pch=20, col=ptcol, cex=1.75)
 abline(fit4,lwd=2)
 #mtext("Empirical",3,line=0.2)
 mtext(expression(paste(italic(R)^2,"=0.65, ",hat(beta),"=0.58")),3,line=-1.65,cex=0.9)
@@ -186,7 +193,7 @@ mtext(expression(paste(italic(R)^2,"=0.02, ",hat(beta),"=-0.0006")),3,line=-1.65
 #mtext(expression(paste(italic(R2),"=0.02, ",italic(beta),"=-0.0006")),3,line=-1.3,cex=0.9)
 mtext("B)",at=20,line=-1.3)
 
-plot(emp.dat$AvgPlotRich, emp.dat$CVTotBiomass, xlab="Richness", ylab="Community CV", ylim=c(0,1), pch=20, col=ptcol,cex=1.75)
+plot(emp.dat$AvgPlotRich, 1/emp.dat$CVTotBiomass, xlab="Richness", ylab="Community CV", pch=20, col=ptcol,cex=1.75)
 abline(fit6,lwd=2)
 mtext(expression(paste(italic(R)^2,"=0.13, ",hat(beta),"=-0.02")),3,line=-1.65,cex=0.9)
 #mtext(expression(paste(italic(R),"=-0.37, ",italic(p),"=0.11, ",italic(beta),"=-0.02")),3,line=-1.3,cex=0.9)
