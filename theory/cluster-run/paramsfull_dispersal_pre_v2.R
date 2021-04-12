@@ -1,6 +1,6 @@
-# This script runs 2500 simulations of the theoretical model on a cluster using Rmpi.
+# This script runs 100 simulations of the theoretical model on a cluster using Rmpi.
 # This script calls:
-# 1. full_parameter_set.csv, which has parameters for 2500 runs
+# 1. example100run.csv, which has parameters for 100 runs
 # 2. theory_functions.R, which has the theoretical model functions and analyses
 #    note that the analyses are a subset of those in CommSpatSynch_v3.R, but paired 
 #    down for computational efficiency.
@@ -14,7 +14,7 @@ nodes <- 10
 ntasks_per_node <- 32
 TotalTasks <- nodes*ntasks_per_node
 
-NumSims <- 2500   # match number of rows in paramater csv
+NumSims <- 2500   # match number of rows in params.csv
 
 # Set the working directory for your cluster run and load necessary data and libraries
 setwd("/project/coexistence/lshoema1/richness_synchrony/")
@@ -122,18 +122,19 @@ clusterExport(cl, ObjectsToImport)
 
 # Run any commands necessary on the processors before running the simulation. 
 temp2 <- clusterEvalQ(cl, setwd("/project/coexistence/lshoema1/richness_synchrony/") )
-temp2 <- clusterEvalQ(cl, source("theory_functions.R") )
+temp2 <- clusterEvalQ(cl, source("theory_functions_v2.R") )
 temp2 <- clusterEvalQ(cl, library(codyn) )
 temp2 <- clusterEvalQ(cl, library(ecodist) )
 temp2 <- clusterEvalQ(cl, library(igraph) )
 temp2 <- clusterEvalQ(cl, library(vegan) )
 temp2 <- clusterEvalQ(cl, library(wsyn) )
+temp2 <- clusterEvalQ(cl, library(betapart) )
 
 # Run the simulations on the cluster. 
 Sims <- clusterApply(cl, x = 1:NumSims, fun = SimFunc)
 
 # Ssave as an R dataframe
 results <- Sims
-save(results, file = "paramsfull_dispersal_pre_results.rdata")
+save(results, file = "paramsfull_dispersal_pre_results_v2.rdata")
 
 
