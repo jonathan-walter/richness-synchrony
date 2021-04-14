@@ -11,7 +11,10 @@ emp.dat<-read.csv(here("empirical/analysisvars_table.csv"), stringsAsFactors = F
 #load theory data -- this CSV was assembled offline from cluster output. We are providing the
 #results, and simulation model function R script; see manuscript for a description of the
 #distributions parameter values were drawn from.
-thry.dat<-read.csv(here("theory/pre_disp_theory_output.csv"))
+#thry.dat<-read.csv(here("theory/pre_disp_theory_output.csv"))
+
+# local dispersal
+thry.dat<-read.csv(here("theory/local_disp_theory_output_v2.csv"))
 
 ## ---------------------------------------------------------------------------------------
 ## Figure 1: Is there spatial synchrony in species richness?
