@@ -14,7 +14,7 @@ emp.dat<-read.csv(here("empirical/analysisvars_table.csv"), stringsAsFactors = F
 #thry.dat<-read.csv(here("theory/pre_disp_theory_output.csv"))
 
 # local dispersal
-thry.dat<-read.csv(here("theory/newv2_local_params2500_results.csv"))
+thry.dat<-read.csv(here("theory/newv2_global_params2500_results.csv"))
 
 ## ---------------------------------------------------------------------------------------
 ## Figure 1: Is there spatial synchrony in species richness?
@@ -27,7 +27,7 @@ emp.fig1$displayname<-c("HAY","JRG","JRN-BASN","JRN-IBPE","JRN-SUMM","KNZ-UP","K
 bb<-rgb(0,114,178,255,maxColorValue=255)
 bg<-rgb(0,148,115,255,maxColorValue=255)
 
-pdf(here("figures/main/Fig1_richsynch_combined.pdf"), width=6.5, height=3.25)
+pdf(here("figures/supplement/Fig1_richsynch_combined.pdf"), width=6.5, height=3.25)
 
 layout(matrix(c(1,2),nrow=1),widths=c(0.45,0.55))
 
@@ -95,7 +95,7 @@ error.bar <- function(x, y, upper, lower=upper, length=0.1,...){
 pal=c(rgb(0,0,0,255,maxColorValue=255),rgb(230,159,0,255,maxColorValue=255),rgb(86,180,233,255,maxColorValue=255))
 
 
-pdf(here("figures/main/Fig2_thry_effects.pdf"), width=3.25, height=3.25)
+pdf(here("figures/supplement/Fig2_thry_effects.pdf"), width=3.25, height=3.25)
 
 par(mar=c(6.1,3.5,0.7,0.7), tcl=-0.4, mgp=c(1,0.5,0))
 
@@ -139,7 +139,7 @@ thry.effects3<-lm(rRichness~AvgPlotRich+Evenness+jacc.tu+jacc.ne+Turnover, data=
 summary(thry.effects3)
 
 
-pdf(here("figures/main/Fig3_emp_effects.pdf"), width=3.25, height=3.25)
+pdf(here("figures/supplement/Fig3_emp_effects.pdf"), width=3.25, height=3.25)
 
 par(mar=c(4.1,3.5,0.7,0.7), tcl=-0.4, mgp=c(1,0.5,0))
 
@@ -194,7 +194,7 @@ summary(fit6)
 
 #### 
 
-pdf(here("figures/main/Fig4_cv_richsynch.pdf"), width=6.5, height=6.5)
+pdf(here("figures/supplement/Fig4_cv_richsynch.pdf"), width=6.5, height=6.5)
 
 par(mar=c(3.1,3.1,1.75,0.5), tcl=-0.4, mgp=c(1.75,0.5,0), mfcol=c(2,2), oma=c(0,0,0,0.6))
 
@@ -202,7 +202,7 @@ plot(thry.dat$rRichness, -1*thry.dat$cv, xlab="Richness synchrony", ylab="Stabil
      pch=20, col="grey")
 abline(fit3, lwd=2)
 #mtext("Theoretical",3,line=0.2)
-mtext(expression(paste(italic(R)^2,"=0.22, ",hat(beta),"=-0.29")),3,line=0.1,cex=0.9)
+mtext(expression(paste(italic(R)^2,"=0.21, ",hat(beta),"=-0.29")),3,line=0.1,cex=0.9)
 #mtext(expression(paste(italic(R2),"=0.48, ",italic(beta),"=0.28")),3,line=-1.3,cex=0.9)
 mtext("A)",at=0.01,line=0.3)
 
